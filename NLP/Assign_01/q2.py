@@ -29,14 +29,14 @@ def classify_tokens(record):
     # Split the record by commas, handling whitespace
     tokens = [token.strip() for token in record.split(',') if token.strip()]
     
-    # print(tokens)
+    print(tokens)
 
     # Handle the specific case where we have 4 tokens (likely a split date)
     if len(tokens) == 4:
-        # Checking all positions for month names that might be part of a split date
+        # Check all positions for month names that might be part of a split date
         month_pattern = r'^(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)'
         
-        # Checking each position for a month name (only up to the second last token)
+        # Check each position for a month name (only up to the second last token)
         for i in range(len(tokens) - 1):  # Stop before the last token
             # print(f"inside token: {i}")
             month_match = re.match(month_pattern, tokens[i], re.IGNORECASE)
@@ -51,7 +51,7 @@ def classify_tokens(record):
     
     # print(f'tokens after combined: {tokens}')
     
-    # Defining regex patterns for classification
+    # Define regex patterns for classification
     date_patterns = [
         r'^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$',  # dd/mm/yyyy or dd-mm-yyyy
         r'^\d{4}[-/]\d{1,2}[-/]\d{1,2}$',    # yyyy-mm-dd or yyyy/mm/dd
@@ -124,11 +124,70 @@ def classify_tokens(record):
     if name:
         name = re.sub(r'^[^A-Za-z]*|[^A-Za-z]*$', '', name)
 
-    # print(f'after filtring------')
-    # print((name, dob, phone))
+    print(f'after filtring------')
+    print((name, dob, phone))
 
     return name, dob, phone
 
+# def classify_tokens(record):
+#     """
+#     Classify tokens in a record as name, phone, or dob.
+#     Returns a tuple (name, dob, phone) with identified values.
+#     """
+#     # Split the record by commas, handling whitespace
+#     tokens = [token.strip() for token in record.split(',') if token.strip()]
+
+#     print(tokens)
+    
+#     # Define regex patterns for classification
+#     date_patterns = [
+#         r'^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$',  # dd/mm/yyyy or dd-mm-yyyy
+#         r'^\d{4}[-/]\d{1,2}[-/]\d{1,2}$',    # yyyy-mm-dd or yyyy/mm/dd
+#         r'^\d{1,2}\s+[A-Za-z]{3,}\s+\d{2,4}$',  # 12 Mar 1980
+#         r'^[A-Za-z]{3,}\s+\d{1,2},?\s+\d{2,4}$',  # March 12, 1980
+#         r'^\d{1,2}\.\d{1,2}\.\d{2,4}$',  # dd.mm.yyyy
+#         r'^\d{1,2}\s+[A-Za-z]{3,}\s+\d{4}$',  # 21 Aug 1973
+#         r'^[A-Za-z]+\s+\d{1,2},?\s+\d{4}$'  # January 15, 1929
+#     ]
+    
+#     #here I have taken assumption that phone number should be greater than 5 digits
+#     phone_pattern = r'^[\+\d\s\-\(\)]{5,}$'  # Matches phone numbers with digits and common separators
+    
+#     # Updated name pattern to allow special characters at the beginning or end
+#     name_pattern = r'^[A-Za-z\s\'\-\.]+$'
+
+#     name = None
+#     phone = None
+#     dob = None
+    
+#     for token in tokens:
+#         # Check if token is a date
+#         is_date = any(re.match(pattern, token) for pattern in date_patterns)
+        
+#         # Check if token is a phone number
+#         is_phone = re.match(phone_pattern, token) and any(char.isdigit() for char in token)
+        
+#         # Check if token is a name (only if not date or phone)
+#         is_name = re.match(name_pattern, token) and not is_date and not is_phone
+        
+#         if is_date and dob is None:
+#             dob = token
+#         elif is_phone and phone is None:
+#             phone = token
+#         elif is_name and name is None:
+#             name = token
+#         else:
+#             # If classification is ambiguous, use fallback logic
+#             if dob is None and any(char.isdigit() for char in token) and '/' in token or '-' in token:
+#                 dob = token
+#             elif phone is None and sum(char.isdigit() for char in token) >= 5:
+#                 phone = token
+#             elif name is None:
+#                 name = token
+    
+#     print(f'after filtering ------')
+#     print((name, dob, phone))
+#     return name, dob, phone
 
 def normalize_dob(dob_string):
     """
@@ -148,7 +207,7 @@ def normalize_dob(dob_string):
         'september': '09', 'october': '10', 'november': '11', 'december': '12'
     }
     
-    # Trying to parse different date formats
+    # Try to parse different date formats
     try:
         # Format: dd/mm/yyyy or dd-mm-yyyy
         if re.match(r'^\d{1,2}[-/]\d{1,2}[-/]\d{2,4}$', dob_string):
@@ -269,6 +328,6 @@ def main(input_file, output_file):
 
 # Example usage
 if __name__ == "__main__":
-    input_file = "Question2_input.txt"  
+    input_file = "Question2_input.txt"  # Replace with actual file path
     output_file = "Question2_output.txt"
     main(input_file, output_file)

@@ -13,7 +13,7 @@ def read_text_file(path):
     return f.read()
 
 
-# Simple whitespace tokenizer (keeps pcncation attached; dterministic)
+# Simple whitespace tokenizer (keeps punctuation attached; deterministic)
 whitespace_words = re.compile(r"\S+")
 
 
@@ -239,8 +239,8 @@ def _train_wp(word_freqs, cap=100, first_n=10):
 
 if __name__ == "__main__":
 
-  # 1) Load corpus
-  path = os.environ.get("", "q1_corpus_near1000.txt")
+  # 1) Load corpus (set Q1_CORPUS to a path; else we use a tiny fallback)
+  path = os.environ.get("Q1_CORPUS", "q1_corpus_near1000.txt")
   if os.path.exists(path):
     text = read_text_file(path)
   else:
